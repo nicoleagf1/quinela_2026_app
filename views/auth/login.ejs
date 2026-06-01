@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Ingresar | Quiniela 2026</title>
+    <link rel="stylesheet" href="/css/tailwind.css">
+</head>
+<body class="bg-gray-50 text-gray-900 font-sans">
+    <%- include('../partials/header') %>
+    <main class="max-w-md mx-auto mt-16 p-6 bg-white shadow-md rounded-xl">
+        <h2 class="text-2xl font-bold mb-6 text-center text-blue-900">Iniciar Sesión</h2>
+        <% if (error) { %>
+            <div class="bg-red-100 text-red-700 p-3 rounded mb-4"><%= error %></div>
+        <% } %>
+        <form action="/login" method="POST">
+            <div class="mb-4">
+                <label class="block text-sm font-medium mb-1">Correo Electrónico</label>
+                <input type="email" name="email" class="w-full border p-2 rounded" required>
+            </div>
+            <div class="mb-6">
+                <label class="block text-sm font-medium mb-1">Contraseña</label>
+                <input type="password" name="password" class="w-full border p-2 rounded" required>
+            </div>
+            <button type="submit" class="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700 font-bold transition">Ingresar</button>
+        </form>
+    </main>
+</body>
+</html>

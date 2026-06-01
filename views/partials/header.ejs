@@ -1,0 +1,16 @@
+<nav class="bg-blue-900 text-white shadow-lg">
+  <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
+    <a href="/" class="text-xl font-bold tracking-wider">Quiniela 2026</a>
+    <div class="flex space-x-4">
+      <% if (user) { %>
+        <a href="/dashboard" class="hover:text-blue-200">Inicio</a>
+        <a href="/matches" class="hover:text-blue-200">Partidos</a>
+        <a href="/leaderboard" class="hover:text-blue-200">Posiciones</a>
+        <a href="/logout" class="hover:text-blue-200">Cerrar Sesión</a>
+      <% } else { %>
+        <a href="/login" class="hover:text-blue-200">Ingresar</a>
+        <a href="/register" class="hover:text-blue-200">Registrarse</a>
+      <% } %>
+    </div>
+  </div>
+</nav>

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Inicio | Quiniela 2026</title>
+    <link rel="stylesheet" href="/css/tailwind.css">
+</head>
+<body class="bg-gray-50 text-gray-900 font-sans flex flex-col min-h-screen">
+    <%- include('partials/header') %>
+    <main class="flex-grow max-w-6xl mx-auto px-4 py-8 w-full">
+        <h1 class="text-3xl font-extrabold text-blue-900 mb-4">¡Bienvenido, <%= user.first_name %>!</h1>
+        <div class="bg-white p-6 shadow-md rounded-xl border border-gray-100">
+            <p class="mb-4">Desde aquí podrás gestionar tus pronósticos y ver tu posición en la tabla general.</p>
+            <div class="flex space-x-4">
+                <a href="/matches" class="bg-blue-600 text-white px-4 py-2 rounded font-bold hover:bg-blue-700">Ver Partidos</a>
+                <a href="/leaderboard" class="bg-amber-600 text-white px-4 py-2 rounded font-bold hover:bg-amber-700">Ver Posiciones</a>
+            </div>
+        </div>
+    </main>
+    <%- include('partials/footer') %>
+</body>
+</html>
