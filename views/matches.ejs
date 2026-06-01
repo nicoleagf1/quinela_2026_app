@@ -2,61 +2,177 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Partidos | Quiniela 2026</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Partidos | Quiniela Mundial 2026</title>
     <link rel="stylesheet" href="/css/tailwind.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body class="bg-gray-50 text-gray-900 font-sans flex flex-col min-h-screen">
-    <%- include('partials/header') %>
-    <main class="flex-grow max-w-6xl mx-auto px-4 py-8 w-full">
-        <h1 class="text-3xl font-extrabold text-blue-900 mb-6">Cartelera de Partidos</h1>
+<body class="w-full min-h-screen text-slate-100 font-sans relative overflow-x-hidden bg-slate-950 flex flex-col">
+    
+    <!-- CONTENEDOR DEL FONDO DINÁMICO EN BUCLE -->
+    <div class="fixed inset-0 z-0 overflow-hidden">
+        <video class="absolute inset-0 w-full h-full object-cover opacity-25 animate-stadium-loop" autoplay loop muted playsinline>
+            <source src="/images/fondo_stadium.mp4" type="video/mp4">
+        </video>
+        <!-- Capa de gradiente oscuro estilo "Soccer Field Blueprint" -->
+        <div class="absolute inset-0 bg-gradient-to-b from-slate-950/90 via-slate-900/40 to-slate-950/95"></div>
+        <!-- Líneas abstractas decorativas del campo de juego (Sutiles en los bordes) -->
+        <div class="absolute inset-x-0 bottom-0 h-64 pointer-events-none hidden md:block" 
+             style="background-image: radial-gradient(circle at 50% 100%, transparent 60%, rgba(255,255,255,0.02) 62%);"></div>
+    </div>
+
+    <!-- Header needs to be z-10 so it's above background -->
+    <div class="relative z-10 bg-slate-950/50 backdrop-blur-md border-b border-white/10">
+        <%- include('partials/header') %>
+    </div>
+
+    <!-- CONTENIDO TRANSACCIONAL (INTERFAZ DE USUARIO) -->
+    <div class="relative z-10 max-w-6xl mx-auto px-6 py-12 flex-grow w-full">
+        
+        <!-- Encabezado de la Sección -->
+        <header class="mb-12 border-b border-white/10 pb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
+            <div>
+                <div class="flex items-center space-x-3 mb-2">
+                    <span class="h-2 w-2 rounded-full bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.5)]"></span>
+                    <p class="text-xs font-black tracking-widest uppercase text-slate-400">Fase de Grupos | Mundial 2026</p>
+                </div>
+                <h1 class="text-3xl font-black tracking-tight text-white uppercase">Pronósticos Disponibles</h1>
+            </div>
+            <div class="text-xs text-slate-400 font-medium bg-slate-900/60 border border-white/5 px-4 py-2 rounded-md backdrop-blur-sm">
+                Zona Horaria: <span class="text-white font-bold">VET (Caracas)</span>
+            </div>
+        </header>
+
         <% if (error) { %>
-            <div class="bg-red-100 text-red-700 p-3 rounded mb-4"><%= error %></div>
+            <div class="bg-red-500/20 border border-red-500/50 text-red-200 p-4 rounded-md mb-8 backdrop-blur-sm font-semibold"><%= error %></div>
         <% } %>
         <% if (success) { %>
-            <div class="bg-emerald-100 text-emerald-700 p-3 rounded mb-4">¡Pronóstico guardado exitosamente!</div>
+            <div class="bg-emerald-500/20 border border-emerald-500/50 text-emerald-200 p-4 rounded-md mb-8 backdrop-blur-sm font-semibold">¡Pronóstico guardado exitosamente!</div>
         <% } %>
+
         <% const dates = Object.keys(groupedMatches); %>
         <% if (dates.length === 0) { %>
-            <p class="text-gray-500 text-lg text-center mt-12">No hay partidos disponibles.</p>
+            <div class="text-center py-16">
+                <i class="fa-solid fa-calendar-xmark text-4xl text-slate-700 mb-4"></i>
+                <p class="text-slate-500 text-lg font-medium">No hay partidos disponibles en este momento.</p>
+            </div>
         <% } else { %>
             <% dates.forEach(dateStr => { %>
-                <div class="mb-10">
-                    <h2 class="text-2xl font-bold text-gray-700 mb-4 pb-2 border-b-2 border-blue-900 inline-block"><%= dateStr %></h2>
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="mb-12">
+                    <!-- Date Header -->
+                    <h2 class="text-xl font-bold text-slate-200 mb-6 flex items-center space-x-3">
+                        <i class="fa-solid fa-calendar-day text-blue-500"></i>
+                        <span><%= dateStr %></span>
+                    </h2>
+                    
+                    <!-- GRID DE TARJETAS PREMIUM -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                         <% groupedMatches[dateStr].forEach(match => { %>
-                            <div class="bg-white p-5 shadow-lg rounded-2xl border border-gray-100 hover:shadow-xl transition-shadow duration-300">
-                                <div class="flex justify-between items-center mb-4 border-b border-gray-100 pb-2">
-                                    <span class="text-xs font-bold uppercase tracking-wider text-blue-600"><%= match.stage %></span>
-                                    <span class="text-sm font-semibold text-gray-500 bg-gray-100 px-2 py-1 rounded"><%= new Date(match.kickoff_time).toLocaleTimeString('es-VE', { hour: '2-digit', minute: '2-digit' }) %></span>
-                                </div>
-                                <form action="/predictions" method="POST" class="flex flex-col items-center">
-                                    <input type="hidden" name="matchId" value="<%= match.id %>">
-                                    <div class="flex w-full justify-between items-center mb-6">
-                                        <div class="text-center w-5/12">
-                                            <p class="font-extrabold text-lg text-gray-800 break-words leading-tight"><%= match.home_team %></p>
-                                        </div>
-                                        <div class="flex items-center space-x-1 w-2/12 justify-center">
-                                            <input type="number" name="homeScore" class="w-10 text-center border-2 border-gray-200 rounded-lg p-1 text-xl font-bold focus:border-blue-500 focus:outline-none transition-colors" min="0" required 
-                                                   value="<%= match.home_score_predicted !== null ? match.home_score_predicted : '' %>">
-                                            <span class="font-bold text-gray-400">-</span>
-                                            <input type="number" name="awayScore" class="w-10 text-center border-2 border-gray-200 rounded-lg p-1 text-xl font-bold focus:border-blue-500 focus:outline-none transition-colors" min="0" required
-                                                   value="<%= match.away_score_predicted !== null ? match.away_score_predicted : '' %>">
-                                        </div>
-                                        <div class="text-center w-5/12">
-                                            <p class="font-extrabold text-lg text-gray-800 break-words leading-tight"><%= match.away_team %></p>
-                                        </div>
+                            <div class="bg-slate-900/80 border border-white/10 rounded-md p-6 backdrop-blur-md shadow-2xl relative overflow-hidden group hover:border-white/20 transition-all duration-300">
+                                
+                                <!-- ID del partido y estado de bloqueo -->
+                                <div class="flex justify-between items-center mb-6 text-[10px] font-black uppercase tracking-widest text-slate-400 relative z-10">
+                                    <div class="flex items-center space-x-2">
+                                        <i class="fa-solid fa-cloud-bolt text-slate-500"></i>
+                                        <span>Partido #<%= match.id %> — <%= match.stage %></span>
                                     </div>
-                                    <button type="submit" class="w-full <%= match.home_score_predicted !== null ? 'bg-amber-500 hover:bg-amber-600' : 'bg-blue-600 hover:bg-blue-700' %> text-white px-6 py-3 rounded-xl font-bold transition-all shadow-md active:scale-95">
-                                        <%= match.home_score_predicted !== null ? 'Actualizar Pronóstico' : 'Guardar Pronóstico' %>
-                                    </button>
+                                    <% if (match.status === 'scheduled') { %>
+                                        <span class="text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-sm border border-emerald-500/20">Abierto</span>
+                                    <% } else { %>
+                                        <span class="text-slate-500 bg-slate-800 px-2 py-0.5 rounded-sm">Cerrado</span>
+                                    <% } %>
+                                </div>
+
+                                <!-- Escudos de fondo (Marcas de agua) -->
+                                <% if(teamData[match.home_team]) { %>
+                                <div class="absolute -left-12 top-1/2 -translate-y-1/2 w-48 h-48 opacity-5 pointer-events-none" style="clip-path: circle(50%); background-image: url('https://flagcdn.com/w320/<%= teamData[match.home_team].iso %>.png'); background-size: cover; background-position: center; filter: grayscale(50%);"></div>
+                                <% } %>
+                                <% if(teamData[match.away_team]) { %>
+                                <div class="absolute -right-12 top-1/2 -translate-y-1/2 w-48 h-48 opacity-5 pointer-events-none" style="clip-path: circle(50%); background-image: url('https://flagcdn.com/w320/<%= teamData[match.away_team].iso %>.png'); background-size: cover; background-position: center; filter: grayscale(50%);"></div>
+                                <% } %>
+
+                                <!-- Formulario de la Quiniela -->
+                                <form action="/predictions" method="POST" class="space-y-6 relative z-10">
+                                    <input type="hidden" name="matchId" value="<%= match.id %>">
+                                    
+                                    <!-- Bloque de Confrontación de Equipos -->
+                                    <div class="flex items-center justify-between relative">
+                                        
+                                        <!-- Equipo Local (Home) -->
+                                        <div class="flex items-center space-x-4 w-5/12">
+                                            <div class="flex flex-col text-left overflow-hidden">
+                                                <div class="flex items-center space-x-2 mb-0.5">
+                                                    <% if(teamData[match.home_team]) { %>
+                                                        <img src="https://flagcdn.com/w40/<%= teamData[match.home_team].iso %>.png" class="w-6 h-auto shadow-sm rounded-[2px]" alt="<%= match.home_team %>">
+                                                    <% } %>
+                                                    <span class="text-xl font-black tracking-tight text-white truncate"><%= teamData[match.home_team] ? teamData[match.home_team].code : match.home_team %></span>
+                                                </div>
+                                                <span class="text-[10px] uppercase font-bold text-slate-500 tracking-wider">Local</span>
+                                            </div>
+                                            <input type="number" name="homeScore" min="0" required
+                                                   value="<%= match.home_score_predicted !== null ? match.home_score_predicted : '' %>"
+                                                   class="w-14 h-12 ml-auto text-center text-xl font-black bg-slate-950/60 border border-white/10 rounded-sm text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                                   placeholder="-">
+                                        </div>
+
+                                        <!-- Separador Central Minimalista -->
+                                        <div class="w-2/12 flex flex-col items-center justify-center">
+                                            <div class="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center bg-slate-950">
+                                                <i class="fa-solid fa-soccer-ball text-xs text-white/30"></i>
+                                            </div>
+                                            <div class="h-4 w-[1px] bg-white/5 mt-1"></div>
+                                        </div>
+
+                                        <!-- Equipo Visitante (Away) -->
+                                        <div class="flex items-center justify-between space-x-4 w-5/12 flex-row-reverse">
+                                            <div class="flex flex-col text-right overflow-hidden">
+                                                <div class="flex items-center space-x-2 flex-row-reverse mb-0.5">
+                                                    <% if(teamData[match.away_team]) { %>
+                                                        <img src="https://flagcdn.com/w40/<%= teamData[match.away_team].iso %>.png" class="w-6 h-auto shadow-sm rounded-[2px] ml-2" alt="<%= match.away_team %>">
+                                                    <% } %>
+                                                    <span class="text-xl font-black tracking-tight text-white truncate"><%= teamData[match.away_team] ? teamData[match.away_team].code : match.away_team %></span>
+                                                </div>
+                                                <span class="text-[10px] uppercase font-bold text-slate-500 tracking-wider">Visitante</span>
+                                            </div>
+                                            <input type="number" name="awayScore" min="0" required
+                                                   value="<%= match.away_score_predicted !== null ? match.away_score_predicted : '' %>"
+                                                   class="w-14 h-12 mr-auto text-center text-xl font-black bg-slate-950/60 border border-white/10 rounded-sm text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                                   placeholder="-">
+                                        </div>
+
+                                    </div>
+
+                                    <!-- Footer de la Tarjeta (Fechas y Acción) -->
+                                    <div class="mt-6 pt-4 border-t border-white/5 flex items-center justify-between text-xs">
+                                        <div class="flex items-center space-x-3 text-slate-400">
+                                            <div class="flex flex-col">
+                                                <span class="font-bold text-slate-200">
+                                                    🕒 <%= new Date(match.kickoff_time).toLocaleTimeString('es-VE', { hour: '2-digit', minute: '2-digit' }) %>
+                                                </span>
+                                                <span class="text-[10px] tracking-wide text-slate-500">
+                                                    Hora de Cierre (VET)
+                                                </span>
+                                            </div>
+                                        </div>
+                                        
+                                        <button type="submit" 
+                                                class="bg-white hover:bg-slate-200 text-slate-950 font-black uppercase text-[11px] tracking-wider px-5 py-2.5 rounded-sm transition-all shadow-lg active:scale-95">
+                                            <%= match.home_score_predicted !== null ? 'Actualizar' : 'Guardar' %>
+                                        </button>
+                                    </div>
                                 </form>
+
                             </div>
                         <% }) %>
                     </div>
                 </div>
             <% }) %>
         <% } %>
-    </main>
-    <%- include('partials/footer') %>
+
+    </div>
+    
+    <div class="relative z-10 border-t border-white/10 bg-slate-950/80 backdrop-blur-md">
+        <%- include('partials/footer') %>
+    </div>
 </body>
 </html>

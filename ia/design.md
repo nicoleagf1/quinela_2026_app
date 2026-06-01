@@ -570,3 +570,13 @@ The following template shows how clean English data objects safely render locali
     </div>
 </body>
 </html>
+
+---
+
+## 9. Interfaz de Usuario - Cartelera de Partidos (Estilo Oscuro Premium)
+
+### 9.1. Concepto y Ficha de Diseño Visual
+* **Inspiración Estética:** Basado en un concepto minimalista de alta gama tomado de tarjetas de presentación oscuras de alta fidelidad (`image_d443c4.png`). Utiliza un contraste marcado entre un fondo oscuro profundo y elementos estructurales limpios en color blanco y gris tiza.
+* **Geometría de Tarjetas:** En lugar de curvas pronunciadas, se implementan esquinas levemente redondeadas utilizando la clase `rounded-md` (radio de curvatura de $4\text{px}$) para mantener una línea gráfica sobria, técnica y corporativa.
+* **Efecto de Fondo Dinámico (Fondo en Bucle):** Utiliza la imagen oficial del estadio (`stadium_bg.jpeg`) con una opacidad reducida (`opacity-25`) y una máscara de gradiente oscuro. Se aplica el efecto *Ken Burns* mediante CSS puro para animar un paneo y zoom suave en bucle infinito, logrando dinamismo sin consumir recursos excesivos del navegador.
+* **Separación de Idiomas:** Toda la estructura lógica, variables del bucle EJS y clases están escritas estrictamente en inglés (buenas prácticas), mientras que las etiquetas, fechas localizadas y mensajes informativos se muestran 100% en español.
