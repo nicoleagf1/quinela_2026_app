@@ -29,6 +29,34 @@ class Ranking {
     );
     return result.rows;
   }
+
+  static async getTop(limit = 5) {
+    const result = await db.query(
+      `SELECT u.id as user_id, u.first_name, u.last_name, 
+              COALESCE(l.total_points, 0) as total_points, 
+              COALESCE(l.exact_matches_count, 0) as exact_matches_count, 
+              COALESCE(l.outcome_matches_count, 0) as outcome_matches_count
+       FROM users u
+       LEFT JOIN leaderboards l ON u.id = l.user_id
+       ORDER BY total_points DESC, l.exact_matches_count DESC, u.first_name ASC
+       LIMIT $1`, [limit]
+    );
+    return result.rows;
+  }
+
+  static async getUserPosition(userId) {
+    const result = await db.query(
+      `WITH RankedUsers AS (
+         SELECT u.id, 
+                RANK() OVER(ORDER BY COALESCE(l.total_points, 0) DESC, COALESCE(l.exact_matches_count, 0) DESC, u.first_name ASC) as position,
+                COALESCE(l.total_points, 0) as total_points
+         FROM users u
+         LEFT JOIN leaderboards l ON u.id = l.user_id
+       )
+       SELECT position, total_points FROM RankedUsers WHERE id = $1`, [userId]
+    );
+    return result.rows[0] || { position: 0, total_points: 0 };
+  }
 }
 
 module.exports = Ranking;

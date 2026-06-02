@@ -1,43 +1,79 @@
-<aside class="w-64 bg-slate-900/90 border-r border-slate-800 flex flex-col justify-between text-slate-300">
-    <div>
-        <div class="p-5 border-b border-slate-800 flex items-center space-x-3 bg-slate-950/50">
-            <i class="fa-solid fa-trophy text-amber-500 text-xl"></i>
-            <span class="font-black tracking-wider text-white text-lg">Quiniela Admin</span>
+<aside class="w-72 bg-slate-900/90 border-r border-white/5 flex flex-col justify-between text-slate-300 relative z-20 backdrop-blur-xl">
+    <div class="overflow-y-auto custom-scrollbar flex-grow">
+        <div class="p-6 border-b border-white/5 flex items-center space-x-3 bg-slate-950/40 sticky top-0 z-10">
+            <i class="fa-solid fa-trophy text-amber-500 text-2xl drop-shadow-md"></i>
+            <div class="flex flex-col">
+                <span class="font-black tracking-wider text-white text-lg leading-tight">Quiniela Admin</span>
+                <span class="text-[10px] text-slate-400 font-medium tracking-widest">Mundial de Fútbol 2026</span>
+            </div>
         </div>
 
-        <div class="p-5 flex items-center space-x-3 border-b border-slate-800/50">
-            <div class="w-10 h-10 rounded-full bg-amber-500 flex items-center justify-center font-bold text-slate-950 shadow-md">
-                AD
-            </div>
+        <nav class="p-5 space-y-6">
+            <!-- GENERAL -->
             <div>
-                <p class="text-xs text-slate-400">Bienvenido,</p>
-                <p class="text-sm font-bold text-white">Administrador</p>
+                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest px-3 mb-3">General</p>
+                <div class="space-y-1">
+                    <a href="/admin/dashboard" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg transition-all <%= activePage === 'dashboard' ? 'bg-blue-600/90 text-white font-bold shadow-[0_0_15px_rgba(37,99,235,0.4)] border border-blue-500/50' : 'text-slate-400 hover:bg-slate-800/80 hover:text-white' %>">
+                        <i class="fa-solid fa-house w-5 text-center <%= activePage === 'dashboard' ? 'text-white' : 'text-slate-500' %>"></i>
+                        <span class="text-sm">Dashboard</span>
+                    </a>
+                    <a href="/admin/users" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg transition-all <%= activePage === 'users' ? 'bg-blue-600/90 text-white font-bold shadow-[0_0_15px_rgba(37,99,235,0.4)] border border-blue-500/50' : 'text-slate-400 hover:bg-slate-800/80 hover:text-white' %>">
+                        <i class="fa-solid fa-users w-5 text-center <%= activePage === 'users' ? 'text-white' : 'text-slate-500' %>"></i>
+                        <span class="text-sm">Usuarios</span>
+                    </a>
+                    <a href="/admin/matches" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg transition-all <%= activePage === 'matches' ? 'bg-blue-600/90 text-white font-bold shadow-[0_0_15px_rgba(37,99,235,0.4)] border border-blue-500/50' : 'text-slate-400 hover:bg-slate-800/80 hover:text-white' %>">
+                        <i class="fa-regular fa-calendar-days w-5 text-center <%= activePage === 'matches' ? 'text-white' : 'text-slate-500' %>"></i>
+                        <span class="text-sm">Partidos</span>
+                    </a>
+                    <a href="/admin/matches/center" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg transition-all <%= activePage === 'matches_center' ? 'bg-blue-600/90 text-white font-bold shadow-[0_0_15px_rgba(37,99,235,0.4)] border border-blue-500/50' : 'text-slate-400 hover:bg-slate-800/80 hover:text-white' %>">
+                        <i class="fa-solid fa-circle-play w-5 text-center <%= activePage === 'matches_center' ? 'text-white' : 'text-slate-500' %>"></i>
+                        <span class="text-sm">Centro de Marcadores</span>
+                    </a>
+                </div>
             </div>
-        </div>
 
-        <nav class="p-4 space-y-2">
-            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest px-3 mb-2">General</p>
-            <a href="/admin/dashboard" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg <%= activePage === 'dashboard' ? 'bg-blue-600 text-white font-medium shadow-md' : 'hover:bg-slate-800 hover:text-white' %> transition-all">
-                <i class="fa-solid fa-chart-pie w-5"></i>
-                <span>Dashboard</span>
-            </a>
-            <a href="/admin/users" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg <%= activePage === 'users' ? 'bg-blue-600 text-white font-medium shadow-md' : 'hover:bg-slate-800 hover:text-white' %> transition-all">
-                <i class="fa-solid fa-users w-5"></i>
-                <span>Usuarios</span>
-            </a>
-            <a href="/admin/matches" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg <%= activePage === 'matches' ? 'bg-blue-600 text-white font-medium shadow-md' : 'hover:bg-slate-800 hover:text-white' %> transition-all">
-                <i class="fa-solid fa-calendar-days w-5"></i>
-                <span>Partidos</span>
-            </a>
-            <a href="/admin/matches/center" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg <%= activePage === 'matches_center' ? 'bg-blue-600 text-white font-medium shadow-md' : 'hover:bg-slate-800 hover:text-white' %> transition-all">
-                <i class="fa-solid fa-circle-play w-5"></i>
-                <span>Centro de Marcadores</span>
-            </a>
+            <!-- REPORTES Y ESTADISTICAS -->
+            <div>
+                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest px-3 mb-3">Reportes y Estadísticas</p>
+                <div class="space-y-1">
+                    <a href="#" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg transition-all text-slate-400 hover:bg-slate-800/80 hover:text-white">
+                        <i class="fa-solid fa-file-contract w-5 text-center text-slate-500"></i>
+                        <span class="text-sm">Reportes</span>
+                    </a>
+                    <a href="#" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg transition-all text-slate-400 hover:bg-slate-800/80 hover:text-white">
+                        <i class="fa-solid fa-chart-column w-5 text-center text-slate-500"></i>
+                        <span class="text-sm">Estadísticas</span>
+                    </a>
+                    <a href="#" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg transition-all text-slate-400 hover:bg-slate-800/80 hover:text-white">
+                        <i class="fa-solid fa-shield-halved w-5 text-center text-slate-500"></i>
+                        <span class="text-sm">Auditoría</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- CONFIGURACION -->
+            <div>
+                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest px-3 mb-3">Configuración</p>
+                <div class="space-y-1">
+                    <a href="#" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg transition-all text-slate-400 hover:bg-slate-800/80 hover:text-white">
+                        <i class="fa-solid fa-gear w-5 text-center text-slate-500"></i>
+                        <span class="text-sm">Configuración General</span>
+                    </a>
+                    <a href="#" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg transition-all text-slate-400 hover:bg-slate-800/80 hover:text-white">
+                        <i class="fa-solid fa-user-shield w-5 text-center text-slate-500"></i>
+                        <span class="text-sm">Roles y Permisos</span>
+                    </a>
+                    <a href="#" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg transition-all text-slate-400 hover:bg-slate-800/80 hover:text-white">
+                        <i class="fa-solid fa-microchip w-5 text-center text-slate-500"></i>
+                        <span class="text-sm">Sistema</span>
+                    </a>
+                </div>
+            </div>
         </nav>
     </div>
 
-    <div class="p-4 border-t border-slate-800 bg-slate-950/40">
-        <a href="/logout" class="flex items-center space-x-3 px-3 py-2 rounded-lg text-rose-400 hover:bg-rose-500/10 transition-all text-sm font-semibold">
+    <div class="p-5 border-t border-white/5 bg-slate-950/60 sticky bottom-0 z-10 backdrop-blur-md">
+        <a href="/logout" class="flex items-center justify-center space-x-3 px-4 py-2.5 rounded-lg border border-red-500/30 text-red-400 hover:bg-red-500 hover:text-white transition-all text-sm font-bold shadow-[0_0_15px_rgba(239,68,68,0.15)]">
             <i class="fa-solid fa-right-from-bracket"></i>
             <span>Cerrar Sesión</span>
         </a>

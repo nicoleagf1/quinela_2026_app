@@ -5,7 +5,11 @@ const Match = require('../models/Match');
 exports.getLeaderboard = async (req, res) => {
   try {
     const rankings = await Ranking.getLeaderboard();
-    res.render('leaderboard', { rankings });
+    res.render('leaderboard', { 
+      rankings,
+      user: req.user,
+      activePage: 'leaderboard'
+    });
   } catch (error) {
     console.error('Error fetching leaderboard:', error);
     res.render('error', { mensaje: 'Error al cargar la tabla de posiciones.' });

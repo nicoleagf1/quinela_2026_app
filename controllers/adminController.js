@@ -3,6 +3,7 @@ const Prediction = require('../models/Prediction');
 const Match = require('../models/Match');
 const Ranking = require('../models/Ranking');
 const rankingController = require('./rankingController');
+const teamData = require('../utils/teamData');
 
 exports.getDashboard = async (req, res) => {
   try {
@@ -23,7 +24,9 @@ exports.getDashboard = async (req, res) => {
     res.render('admin/dashboard', {
       metrics,
       usersList,
-      criticalMatches
+      criticalMatches,
+      teamData,
+      activePage: 'dashboard'
     });
   } catch (error) {
     console.error('Error loading admin dashboard:', error);

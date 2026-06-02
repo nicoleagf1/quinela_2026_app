@@ -80,12 +80,22 @@ app.get('/', (req, res) => {
   res.redirect('/login');
 });
 
-app.get('/dashboard', (req, res) => {
+const dashboardController = require('./controllers/dashboardController');
+const auditController = require('./controllers/auditController');
+
+app.get('/dashboard', (req, res, next) => {
   if (req.isAuthenticated()) {
-    return res.render('dashboard');
+    return next();
   }
   res.redirect('/login');
-});
+}, dashboardController.getDashboard);
+
+app.get('/auditoria', (req, res, next) => {
+  if (req.isAuthenticated()) {
+    return next();
+  }
+  res.redirect('/login');
+}, auditController.getAuditList);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

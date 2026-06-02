@@ -24,6 +24,20 @@ class Prediction {
     return parseInt(result.rows[0].count, 10);
   }
 
+  static async getUserStats(userId) {
+    const result = await db.query(
+      `SELECT 
+        COUNT(*) as total_predictions,
+        SUM(CASE WHEN points_awarded = 3 THEN 1 ELSE 0 END) as exact_matches,
+        SUM(CASE WHEN points_awarded = 1 THEN 1 ELSE 0 END) as outcome_matches,
+        SUM(CASE WHEN points_awarded > 0 THEN 1 ELSE 0 END) as correct_predictions
+       FROM predictions 
+       WHERE user_id = $1`,
+      [userId]
+    );
+    return result.rows[0];
+  }
+
   static async updatePointsAwarded(id, points) {
     await db.query(
       'UPDATE predictions SET points_awarded = $1, is_calculated = TRUE, updated_at = CURRENT_TIMESTAMP WHERE id = $2',

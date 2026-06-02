@@ -2,35 +2,167 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Registrarse | Quiniela 2026</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrarse | Quiniela VE PAGOS</title>
     <link rel="stylesheet" href="/css/tailwind.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Google Fonts: Source Sans 3 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 </head>
-<body class="bg-gray-50 text-gray-900 font-sans">
-    <%- include('../partials/header') %>
-    <main class="max-w-md mx-auto mt-16 p-6 bg-white shadow-md rounded-xl">
-        <h2 class="text-2xl font-bold mb-6 text-center text-blue-900">Crear Cuenta</h2>
-        <% if (error) { %>
-            <div class="bg-red-100 text-red-700 p-3 rounded mb-4"><%= error %></div>
-        <% } %>
-        <form action="/register" method="POST">
-            <div class="mb-4">
-                <label class="block text-sm font-medium mb-1">Nombre</label>
-                <input type="text" name="firstName" class="w-full border p-2 rounded" required>
+<body class="font-sans min-h-screen relative overflow-hidden flex flex-col justify-center items-center text-slate-100">
+    
+    <!-- Fondo Cinemático -->
+    <div class="fixed inset-0 z-0 pointer-events-none">
+        <div class="absolute inset-0 bg-cover bg-center bg-no-repeat" style="background-image: url('/images/stadium_bg.jpeg');"></div>
+        <!-- Overlay -->
+        <div class="absolute inset-0 bg-slate-950/80 backdrop-blur-[2px]"></div>
+        <div class="absolute inset-0 bg-gradient-to-b from-slate-950/40 via-transparent to-slate-950/90"></div>
+    </div>
+
+    <!-- Contenido Principal -->
+    <div class="relative z-10 w-full px-4 flex flex-col items-center py-10 overflow-y-auto max-h-screen custom-scrollbar">
+        
+        <!-- Branding Top -->
+        <div class="text-center mb-8 animate-fade-in-down">
+            <i class="fa-solid fa-trophy text-amber-500 text-4xl drop-shadow-[0_0_15px_rgba(245,158,11,0.5)] mb-3"></i>
+            <h1 class="text-4xl md:text-5xl font-black tracking-tight drop-shadow-lg flex justify-center items-center space-x-2">
+                <span class="text-white">Quiniela</span>
+                <span class="text-emerald-500 italic">VE</span>
+                <span class="text-white">PAGOS</span>
+            </h1>
+            <div class="flex items-center justify-center mt-3 space-x-4">
+                <div class="h-px w-16 bg-amber-500/50"></div>
+                <h2 class="text-amber-500 font-bold tracking-widest uppercase text-sm drop-shadow-md">Mundial de Fútbol 2026</h2>
+                <div class="h-px w-16 bg-amber-500/50"></div>
             </div>
-            <div class="mb-4">
-                <label class="block text-sm font-medium mb-1">Apellido</label>
-                <input type="text" name="lastName" class="w-full border p-2 rounded" required>
+        </div>
+
+        <!-- Tarjeta de Registro (Glassmorphism) -->
+        <main class="w-full max-w-[500px] bg-slate-900/75 backdrop-blur-[14px] border border-white/10 rounded-3xl p-8 md:p-10 shadow-[0_0_40px_rgba(2,6,23,0.8)] relative mt-4">
+            
+            <!-- Icono Superior User Plus -->
+            <div class="absolute -top-6 left-1/2 transform -translate-x-1/2">
+                <div class="w-12 h-12 rounded-xl bg-emerald-900/80 border border-emerald-500/50 flex items-center justify-center shadow-[0_0_20px_rgba(16,185,129,0.4)] backdrop-blur-md">
+                    <i class="fa-solid fa-user-plus text-emerald-400 text-xl"></i>
+                </div>
             </div>
-            <div class="mb-4">
-                <label class="block text-sm font-medium mb-1">Correo Electrónico</label>
-                <input type="email" name="email" class="w-full border p-2 rounded" required>
+
+            <div class="text-center mt-4 mb-8">
+                <h2 class="text-2xl font-bold text-white mb-1">Crear Cuenta</h2>
+                <p class="text-sm text-slate-400">Únete a la quiniela oficial</p>
             </div>
-            <div class="mb-6">
-                <label class="block text-sm font-medium mb-1">Contraseña</label>
-                <input type="password" name="password" class="w-full border p-2 rounded" required>
-            </div>
-            <button type="submit" class="w-full bg-emerald-600 text-white p-2 rounded hover:bg-emerald-700 font-bold transition">Registrarse</button>
-        </form>
-    </main>
+
+            <% if (typeof error !== 'undefined' && error) { %>
+                <div class="bg-red-500/10 border border-red-500/50 text-red-400 p-3 rounded-lg mb-6 text-sm font-medium text-center shadow-[0_0_10px_rgba(239,68,68,0.2)]">
+                    <i class="fa-solid fa-circle-exclamation mr-2"></i><%= error %>
+                </div>
+            <% } %>
+
+            <form action="/register" method="POST" class="space-y-5">
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <!-- Nombre -->
+                    <div>
+                        <label class="block text-xs font-medium text-slate-300 mb-2">Nombre</label>
+                        <div class="relative group">
+                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                <i class="fa-regular fa-user text-slate-500 group-focus-within:text-emerald-500 transition-colors"></i>
+                            </div>
+                            <input type="text" name="firstName" class="w-full bg-slate-950/50 border border-slate-700 text-white text-sm rounded-xl focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 block pl-11 p-3 transition-colors placeholder-slate-600 outline-none" placeholder="Tu nombre" required>
+                        </div>
+                    </div>
+                    
+                    <!-- Apellido -->
+                    <div>
+                        <label class="block text-xs font-medium text-slate-300 mb-2">Apellido</label>
+                        <div class="relative group">
+                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                <i class="fa-regular fa-user text-slate-500 group-focus-within:text-emerald-500 transition-colors"></i>
+                            </div>
+                            <input type="text" name="lastName" class="w-full bg-slate-950/50 border border-slate-700 text-white text-sm rounded-xl focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 block pl-11 p-3 transition-colors placeholder-slate-600 outline-none" placeholder="Tu apellido" required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Correo Electrónico -->
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 mb-2">Correo Electrónico</label>
+                    <div class="relative group">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <i class="fa-regular fa-envelope text-slate-500 group-focus-within:text-emerald-500 transition-colors"></i>
+                        </div>
+                        <input type="email" name="email" id="email" class="w-full bg-slate-950/50 border border-slate-700 text-white text-sm rounded-xl focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 block pl-11 p-3 transition-colors placeholder-slate-600 outline-none" placeholder="ejemplo@correo.com" required autocomplete="email">
+                        <!-- Check verde estático -->
+                        <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+                            <i class="fa-solid fa-envelope-circle-check text-emerald-500 opacity-0 transition-opacity duration-300" id="email-check"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contraseña -->
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 mb-2">Contraseña</label>
+                    <div class="relative group">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <i class="fa-solid fa-lock text-slate-500 group-focus-within:text-emerald-500 transition-colors"></i>
+                        </div>
+                        <input type="password" name="password" id="password" class="w-full bg-slate-950/50 border border-slate-700 text-white text-sm rounded-xl focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 block pl-11 pr-11 p-3 transition-colors placeholder-slate-600 outline-none tracking-widest" placeholder="••••••••••••" required minlength="6">
+                        <!-- Toggle Password -->
+                        <button type="button" id="togglePassword" class="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-500 hover:text-slate-300 focus:outline-none transition-colors">
+                            <i class="fa-regular fa-eye" id="eyeIcon"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Submit -->
+                <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 px-4 rounded-xl transition-all duration-300 transform hover:-translate-y-0.5 shadow-[0_0_20px_rgba(16,185,129,0.35)] flex items-center justify-center space-x-2 group mt-6">
+                    <span>Registrarse</span>
+                    <i class="fa-solid fa-user-check text-sm transition-transform group-hover:scale-110"></i>
+                </button>
+            </form>
+        </main>
+
+        <!-- Footer link -->
+        <div class="mt-8 text-center text-sm text-slate-400 pb-8">
+            ¿Ya tienes una cuenta? <a href="/login" class="text-emerald-500 font-bold hover:text-emerald-400 hover:underline transition-colors">Inicia sesión aquí</a>
+        </div>
+
+    </div>
+
+    <!-- Lógica de interacciones UI -->
+    <script>
+        // Toggle de visibilidad de contraseña
+        const togglePassword = document.querySelector('#togglePassword');
+        const password = document.querySelector('#password');
+        const eyeIcon = document.querySelector('#eyeIcon');
+
+        togglePassword.addEventListener('click', function (e) {
+            const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+            password.setAttribute('type', type);
+            
+            if(type === 'text') {
+                eyeIcon.classList.remove('fa-eye');
+                eyeIcon.classList.add('fa-eye-slash');
+            } else {
+                eyeIcon.classList.remove('fa-eye-slash');
+                eyeIcon.classList.add('fa-eye');
+            }
+        });
+
+        // Simple validación visual del correo (para mostrar el check verde)
+        const emailInput = document.getElementById('email');
+        const emailCheck = document.getElementById('email-check');
+        
+        emailInput.addEventListener('input', function() {
+            if(this.value.includes('@') && this.value.includes('.')) {
+                emailCheck.classList.remove('opacity-0');
+            } else {
+                emailCheck.classList.add('opacity-0');
+            }
+        });
+    </script>
 </body>
 </html>

@@ -21,13 +21,14 @@ function loadJSONDb() {
       users: [],
       matches: [],
       predictions: [],
-      leaderboards: []
+      leaderboards: [],
+      auditoria: []
     }, null, 2));
   }
   try {
     return JSON.parse(fs.readFileSync(JSON_DB_PATH, 'utf8'));
   } catch (e) {
-    return { users: [], matches: [], predictions: [], leaderboards: [] };
+    return { users: [], matches: [], predictions: [], leaderboards: [], auditoria: [] };
   }
 }
 
@@ -83,6 +84,7 @@ async function mockQuery(text, params = []) {
     data.matches = [];
     data.predictions = [];
     data.leaderboards = [];
+    data.auditoria = [];
     saveJSONDb(data);
     return { rows: [] };
   }
@@ -105,7 +107,7 @@ async function mockQuery(text, params = []) {
 
   // 5. SELECT FROM users BY email
   if (queryText.includes('FROM users WHERE email = $1')) {
-    const user = data.users.find(u => u.email === params[0]);
+    const user = data.users.find(u => u.email.toLowerCase() === params[0].toLowerCase());
     return { rows: user ? [user] : [] };
   }
 
@@ -127,7 +129,17 @@ async function mockQuery(text, params = []) {
   }
 
   // 9. UPDATE users
-  if (queryText.startsWith('UPDATE users SET')) {
+  if (queryText.startsWith('UPDATE users SET password_hash = $1, role = $2 WHERE email = $3')) {
+    const idx = data.users.findIndex(u => u.email === params[2]);
+    if (idx !== -1) {
+      data.users[idx].password_hash = params[0];
+      data.users[idx].role = params[1];
+      saveJSONDb(data);
+    }
+    return { rows: [] };
+  }
+
+  if (queryText.startsWith('UPDATE users SET first_name = $1, last_name = $2, email = $3, role = $4 WHERE id = $5')) {
     const idx = data.users.findIndex(u => u.id === params[4]);
     if (idx !== -1) {
       data.users[idx].first_name = params[0];
@@ -328,6 +340,45 @@ async function mockQuery(text, params = []) {
       if (b.exact_matches_count !== a.exact_matches_count) return b.exact_matches_count - a.exact_matches_count;
       return a.first_name.localeCompare(b.first_name);
     });
+    return { rows };
+  }
+
+  // 25. INSERT INTO auditoria
+  if (queryText.startsWith('INSERT INTO auditoria')) {
+    if (!data.auditoria) data.auditoria = [];
+    const newAudit = {
+      id: data.auditoria.length + 1,
+      user_id: params[0],
+      match_id: params[1],
+      home_score: params[2],
+      away_score: params[3],
+      action_type: 'UPSERT',
+      created_at: new Date()
+    };
+    data.auditoria.push(newAudit);
+    saveJSONDb(data);
+    return { rows: [newAudit] };
+  }
+
+  // 26. SELECT FROM auditoria JOIN users JOIN matches
+  if (queryText.includes('FROM auditoria a JOIN users u ON a.user_id = u.id JOIN matches m ON a.match_id = m.id')) {
+    if (!data.auditoria) data.auditoria = [];
+    const rows = data.auditoria.map(a => {
+      const u = data.users.find(user => user.id === a.user_id);
+      const m = data.matches.find(match => match.id === a.match_id);
+      return {
+        id: a.id,
+        user_id: a.user_id,
+        match_id: a.match_id,
+        home_score: a.home_score,
+        away_score: a.away_score,
+        created_at: a.created_at,
+        first_name: u ? u.first_name : 'Usuario',
+        last_name: u ? u.last_name : 'Desconocido',
+        home_team: m ? m.home_team : 'Local',
+        away_team: m ? m.away_team : 'Visitante'
+      };
+    }).sort((x, y) => new Date(y.created_at) - new Date(x.created_at));
     return { rows };
   }
 

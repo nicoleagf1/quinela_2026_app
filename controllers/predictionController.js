@@ -1,5 +1,6 @@
 const Match = require('../models/Match');
 const Prediction = require('../models/Prediction');
+const Audit = require('../models/Audit');
 
 exports.submitPrediction = async (req, res) => {
     const { matchId, homeScore, awayScore } = req.body;
@@ -23,6 +24,9 @@ exports.submitPrediction = async (req, res) => {
         }
 
         await Prediction.upsertUserPrediction(userId, matchId, homeScore, awayScore);
+        
+        // Log to Audit table
+        await Audit.logPrediction(userId, matchId, homeScore, awayScore);
         
         res.redirect('/matches?status=success');
     } catch (error) {

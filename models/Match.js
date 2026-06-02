@@ -78,6 +78,31 @@ class Match {
       [homeScore, awayScore, id]
     );
   }
+
+  static async getTotalCount() {
+    const result = await db.query('SELECT COUNT(*) FROM matches');
+    return parseInt(result.rows[0].count, 10);
+  }
+
+  static async getUpcomingMatches(limit = 3) {
+    const result = await db.query(
+      `SELECT * FROM matches 
+       WHERE status = 'scheduled' 
+       ORDER BY kickoff_time ASC 
+       LIMIT $1`, [limit]
+    );
+    return result.rows;
+  }
+
+  static async getRecentResults(limit = 3) {
+    const result = await db.query(
+      `SELECT * FROM matches 
+       WHERE status = 'finished' 
+       ORDER BY updated_at DESC 
+       LIMIT $1`, [limit]
+    );
+    return result.rows;
+  }
 }
 
 module.exports = Match;

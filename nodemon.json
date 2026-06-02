@@ -1,0 +1,7 @@
+{
+  "ignore": [
+    "ia_mock_db.json",
+    "scratch/*",
+    "public/*"
+  ]
+}

@@ -6,7 +6,8 @@ module.exports = function(passport) {
   passport.use(
     new LocalStrategy({ usernameField: 'email' }, async (email, password, done) => {
       try {
-        const result = await db.query('SELECT * FROM users WHERE email = $1', [email]);
+        const normalizedEmail = email.trim().toLowerCase();
+        const result = await db.query('SELECT * FROM users WHERE email = $1', [normalizedEmail]);
         if (result.rows.length === 0) {
           return done(null, false, { message: 'El correo no está registrado.' });
         }
@@ -32,7 +33,11 @@ module.exports = function(passport) {
   passport.deserializeUser(async (id, done) => {
     try {
       const result = await db.query('SELECT * FROM users WHERE id = $1', [id]);
-      done(null, result.rows[0]);
+      if (result.rows && result.rows.length > 0) {
+        done(null, result.rows[0]);
+      } else {
+        done(null, false);
+      }
     } catch (err) {
       done(err, null);
     }
