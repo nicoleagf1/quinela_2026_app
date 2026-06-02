@@ -25,7 +25,10 @@ async function init() {
   console.log('Testing Redis connection...');
   try {
     const redisClient = createClient({
-      url: process.env.REDIS_URL || 'redis://localhost:6379'
+      url: process.env.REDIS_URL || 'redis://localhost:6379',
+      socket: {
+        reconnectStrategy: false
+      }
     });
     redisClient.on('error', (err) => {});
     await redisClient.connect();

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Usuario | Quiniela Mundial 2026</title>
+    <link rel="stylesheet" href="/css/tailwind.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-cover bg-center bg-no-repeat bg-fixed font-sans min-h-screen relative" style="background-image: url('/images/stadium_bg.jpeg');">
+    
+    <div class="absolute inset-0 bg-slate-950/80 backdrop-blur-sm z-0"></div>
+
+    <div class="flex h-screen relative z-10 overflow-hidden">
+
+        <%- include('../partials/admin_sidebar', { activePage: 'users' }) %>
+
+        <main class="flex-1 flex flex-col overflow-y-auto">
+            
+            <header class="bg-slate-900/60 border-b border-slate-800 px-8 py-4 flex justify-between items-center backdrop-blur-md">
+                <h1 class="text-xl font-extrabold text-white">Editar Perfil de Usuario</h1>
+                <div class="text-sm text-slate-400 font-medium">Panel Administrativo</div>
+            </header>
+
+            <div class="p-8 max-w-2xl">
+                <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-8 backdrop-blur-md shadow-xl">
+                    <div class="flex items-center space-x-3 mb-6 border-b border-slate-800 pb-4">
+                        <i class="fa-solid fa-user-pen text-amber-500 text-xl"></i>
+                        <h2 class="text-lg font-bold text-white">Modificar Datos: <%= userToEdit.first_name %> <%= userToEdit.last_name %></h2>
+                    </div>
+
+                    <form action="/admin/users/edit/<%= userToEdit.id %>" method="POST" class="space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-xs font-black uppercase text-slate-400 mb-2">Nombre</label>
+                                <input type="text" name="firstName" value="<%= userToEdit.first_name %>" required
+                                       class="w-full bg-slate-950/60 border border-slate-800 hover:border-slate-700 focus:border-blue-500 focus:outline-none p-3 rounded-lg text-white font-medium transition-all">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-black uppercase text-slate-400 mb-2">Apellido</label>
+                                <input type="text" name="lastName" value="<%= userToEdit.last_name %>" required
+                                       class="w-full bg-slate-950/60 border border-slate-800 hover:border-slate-700 focus:border-blue-500 focus:outline-none p-3 rounded-lg text-white font-medium transition-all">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-black uppercase text-slate-400 mb-2">Correo Electrónico</label>
+                            <input type="email" name="email" value="<%= userToEdit.email %>" required
+                                   class="w-full bg-slate-950/60 border border-slate-800 hover:border-slate-700 focus:border-blue-500 focus:outline-none p-3 rounded-lg text-white font-medium transition-all">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-black uppercase text-slate-400 mb-2">Rol del Sistema</label>
+                            <select name="role" required
+                                    class="w-full bg-slate-950/60 border border-slate-800 hover:border-slate-700 focus:border-blue-500 focus:outline-none p-3 rounded-lg text-white font-medium transition-all">
+                                <option value="user" <%= userToEdit.role === 'user' ? 'selected' : '' %>>Participante (user)</option>
+                                <option value="admin" <%= userToEdit.role === 'admin' ? 'selected' : '' %>>Administrador (admin)</option>
+                            </select>
+                        </div>
+
+                        <div class="flex space-x-4 pt-4 border-t border-slate-800">
+                            <button type="submit" 
+                                    class="bg-blue-600 hover:bg-blue-500 text-white font-bold px-6 py-2.5 rounded-lg shadow-md transition-all">
+                                Guardar Cambios
+                            </button>
+                            <a href="/admin/users" 
+                               class="bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold px-6 py-2.5 rounded-lg border border-slate-700 transition-all text-center">
+                                Cancelar
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

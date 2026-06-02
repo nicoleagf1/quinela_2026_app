@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Centro de Marcadores | Quiniela Mundial 2026</title>
+    <link rel="stylesheet" href="/css/tailwind.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-cover bg-center bg-no-repeat bg-fixed font-sans min-h-screen relative" style="background-image: url('/images/stadium_bg.jpeg');">
+    
+    <div class="absolute inset-0 bg-slate-950/80 backdrop-blur-sm z-0"></div>
+
+    <div class="flex h-screen relative z-10 overflow-hidden">
+
+        <%- include('../partials/admin_sidebar', { activePage: 'matches_center' }) %>
+
+        <main class="flex-1 flex flex-col overflow-y-auto">
+            
+            <header class="bg-slate-900/60 border-b border-slate-800 px-8 py-4 flex justify-between items-center backdrop-blur-md">
+                <h1 class="text-xl font-extrabold text-white">Centro de Reporte de Marcadores</h1>
+                <div class="text-sm text-slate-400 font-medium">Control de Resultados Oficiales</div>
+            </header>
+
+            <div class="p-8 space-y-6">
+                
+                <% if (success) { %>
+                    <div class="bg-emerald-500/20 border border-emerald-500/50 text-emerald-300 p-4 rounded-xl backdrop-blur-sm font-semibold flex items-center space-x-2">
+                        <i class="fa-solid fa-circle-check text-xl"></i>
+                        <span>¡Resultado oficial registrado y puntajes de participantes actualizados exitosamente!</span>
+                    </div>
+                <% } %>
+
+                <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 backdrop-blur-md shadow-xl">
+                    <div class="flex items-center space-x-3 mb-6">
+                        <i class="fa-solid fa-circle-play text-emerald-500 animate-pulse"></i>
+                        <h2 class="text-base font-bold text-white">Partidos Pendientes de Resultados</h2>
+                    </div>
+
+                    <% if (activeMatches && activeMatches.length > 0) { %>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <% activeMatches.forEach(match => { %>
+                                <div class="bg-slate-950/50 border border-slate-850 p-6 rounded-xl relative overflow-hidden flex flex-col justify-between hover:border-slate-700 transition-all">
+                                    
+                                    <div class="flex justify-between items-center text-[10px] font-black uppercase text-slate-400 mb-4">
+                                        <span>Partido #<%= match.id %> — <%= match.stage %></span>
+                                        <% if (match.status === 'live') { %>
+                                            <span class="text-red-400 bg-red-500/10 px-2 py-0.5 rounded border border-red-500/20 animate-pulse">En Vivo</span>
+                                        <% } else { %>
+                                            <span class="text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">Programado</span>
+                                        <% } %>
+                                    </div>
+
+                                    <form action="/admin/matches/score" method="POST" class="space-y-6">
+                                        <input type="hidden" name="matchId" value="<%= match.id %>">
+                                        
+                                        <div class="flex items-center justify-between">
+                                            <!-- Home Team -->
+                                            <div class="flex items-center space-x-3 w-5/12">
+                                                <div class="flex flex-col text-left">
+                                                    <span class="text-lg font-extrabold text-white truncate"><%= match.home_team %></span>
+                                                    <span class="text-[9px] uppercase font-bold text-slate-500">Local</span>
+                                                </div>
+                                                <input type="number" name="homeScore" min="0" required
+                                                       class="w-12 h-10 ml-auto text-center text-lg font-black bg-slate-950/80 border border-slate-800 rounded focus:outline-none focus:border-blue-500 text-white"
+                                                       placeholder="-">
+                                            </div>
+
+                                            <div class="w-2/12 flex items-center justify-center font-bold text-slate-600">
+                                                VS
+                                            </div>
+
+                                            <!-- Away Team -->
+                                            <div class="flex items-center justify-between space-x-3 w-5/12 flex-row-reverse">
+                                                <div class="flex flex-col text-right">
+                                                    <span class="text-lg font-extrabold text-white truncate"><%= match.away_team %></span>
+                                                    <span class="text-[9px] uppercase font-bold text-slate-500">Visitante</span>
+                                                </div>
+                                                <input type="number" name="awayScore" min="0" required
+                                                       class="w-12 h-10 mr-auto text-center text-lg font-black bg-slate-950/80 border border-slate-800 rounded focus:outline-none focus:border-blue-500 text-white"
+                                                       placeholder="-">
+                                            </div>
+                                        </div>
+
+                                        <div class="pt-4 border-t border-slate-900/60 flex items-center justify-between">
+                                            <div class="text-[10px] text-slate-500">
+                                                📅 Kickoff: <%= new Date(match.kickoff_time).toLocaleDateString('es-VE') %> <%= new Date(match.kickoff_time).toLocaleTimeString('es-VE', {hour:'2-digit', minute:'2-digit'}) %>
+                                            </div>
+                                            <button type="submit"
+                                                    class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs uppercase px-4 py-2 rounded shadow-md transition-all active:scale-95">
+                                                Guardar Oficial
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            <% }) %>
+                        </div>
+                    <% } else { %>
+                        <div class="text-center py-12 text-slate-500">
+                            <i class="fa-solid fa-check-double text-4xl mb-4 text-slate-700"></i>
+                            <p class="text-lg font-medium">Todos los partidos registrados ya han finalizado y sus puntuaciones fueron calculadas.</p>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

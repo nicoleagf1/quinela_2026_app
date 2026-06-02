@@ -6,6 +6,9 @@
         <a href="/dashboard" class="hover:text-blue-200">Inicio</a>
         <a href="/matches" class="hover:text-blue-200">Partidos</a>
         <a href="/leaderboard" class="hover:text-blue-200">Posiciones</a>
+        <% if (user.role === 'admin') { %>
+          <a href="/admin/dashboard" class="hover:text-amber-300 font-bold text-amber-400">Admin</a>
+        <% } %>
         <a href="/logout" class="hover:text-blue-200">Cerrar Sesión</a>
       <% } else { %>
         <a href="/login" class="hover:text-blue-200">Ingresar</a>

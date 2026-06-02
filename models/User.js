@@ -24,6 +24,20 @@ class User {
     const result = await db.query('SELECT COUNT(*) FROM users');
     return parseInt(result.rows[0].count, 10);
   }
+
+  static async getAll() {
+    const result = await db.query('SELECT id, first_name, last_name, email, role, created_at FROM users ORDER BY created_at DESC');
+    return result.rows;
+  }
+
+  static async update(id, { firstName, lastName, email, role }) {
+    await db.query(
+      `UPDATE users 
+       SET first_name = $1, last_name = $2, email = $3, role = $4
+       WHERE id = $5`,
+      [firstName, lastName, email, role, id]
+    );
+  }
 }
 
 module.exports = User;

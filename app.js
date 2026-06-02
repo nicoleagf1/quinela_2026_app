@@ -8,12 +8,6 @@ require('dotenv').config();
 
 const app = express();
 
-// Redis Client Setup
-const redisClient = createClient({
-  url: process.env.REDIS_URL || 'redis://localhost:6379'
-});
-redisClient.connect().catch(console.error);
-
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -24,19 +18,42 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
 // Session Config
-app.use(
-  session({
-    store: new RedisStore({ client: redisClient }),
-    secret: process.env.SESSION_SECRET || 'supersecret',
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      secure: process.env.NODE_ENV === 'production',
-      httpOnly: true,
-      maxAge: 1000 * 60 * 60 * 24 // 1 day
+const sessionOptions = {
+  secret: process.env.SESSION_SECRET || 'supersecret',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: process.env.NODE_ENV === 'production',
+    httpOnly: true,
+    maxAge: 1000 * 60 * 60 * 24 // 1 day
+  }
+};
+
+if (process.env.USE_REDIS === 'true') {
+  const { RedisStore } = require('connect-redis');
+  const { createClient } = require('redis');
+
+  const redisClient = createClient({
+    url: process.env.REDIS_URL || 'redis://localhost:6379',
+    socket: {
+      reconnectStrategy: (retries) => {
+        if (retries > 5) {
+          console.error('Redis connection failed permanently after 5 attempts. Sessions might be offline.');
+          return new Error('Redis connection failed');
+        }
+        return Math.min(retries * 100, 3000);
+      }
     }
-  })
-);
+  });
+  redisClient.connect().catch(console.error);
+
+  sessionOptions.store = new RedisStore({ client: redisClient });
+  console.log('Redis Session Store enabled.');
+} else {
+  console.log('Memory Session Store enabled.');
+}
+
+app.use(session(sessionOptions));
 
 // Passport Config
 require('./config/passport')(passport);

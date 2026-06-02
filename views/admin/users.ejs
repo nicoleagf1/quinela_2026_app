@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Usuarios | Quiniela Mundial 2026</title>
+    <link rel="stylesheet" href="/css/tailwind.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-cover bg-center bg-no-repeat bg-fixed font-sans min-h-screen relative" style="background-image: url('/images/stadium_bg.jpeg');">
+    
+    <div class="absolute inset-0 bg-slate-950/80 backdrop-blur-sm z-0"></div>
+
+    <div class="flex h-screen relative z-10 overflow-hidden">
+
+        <%- include('../partials/admin_sidebar', { activePage: 'users' }) %>
+
+        <main class="flex-1 flex flex-col overflow-y-auto">
+            
+            <header class="bg-slate-900/60 border-b border-slate-800 px-8 py-4 flex justify-between items-center backdrop-blur-md">
+                <h1 class="text-xl font-extrabold text-white">Gestión de Usuarios</h1>
+                <div class="text-sm text-slate-400 font-medium">Mundial de Fútbol 2026</div>
+            </header>
+
+            <div class="p-8">
+                <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 backdrop-blur-md shadow-xl">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-base font-bold text-white flex items-center space-x-2">
+                            <i class="fa-solid fa-users text-amber-500"></i>
+                            <span>Listado de Participantes Registrados</span>
+                        </h3>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm text-slate-300">
+                            <thead class="text-xs uppercase text-slate-400 bg-slate-950/50 rounded-lg">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 rounded-l-lg">Nombre Completo</th>
+                                    <th scope="col" class="px-6 py-3">Correo Electrónico</th>
+                                    <th scope="col" class="px-6 py-3 text-center">Rol</th>
+                                    <th scope="col" class="px-6 py-3 text-center">Fecha Registro</th>
+                                    <th scope="col" class="px-6 py-3 text-right rounded-r-lg">Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-800/60 font-medium">
+                                <% users.forEach(user => { %>
+                                    <tr class="hover:bg-slate-800/40 transition-colors">
+                                        <td class="px-6 py-4 font-bold text-white"><%= user.first_name %> <%= user.last_name %></td>
+                                        <td class="px-6 py-4 text-slate-300"><%= user.email %></td>
+                                        <td class="px-6 py-4 text-center">
+                                            <span class="text-[10px] px-2 py-0.5 rounded-full font-black uppercase <%= user.role === 'admin' ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' : 'bg-slate-800 text-slate-400 border border-slate-700' %>">
+                                                <%= user.role %>
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-4 text-center text-slate-400">
+                                            <%= new Date(user.created_at).toLocaleDateString('es-VE', {day:'2-digit', month:'2-digit', year:'numeric'}) %>
+                                        </td>
+                                        <td class="px-6 py-4 text-right">
+                                            <a href="/admin/users/edit/<%= user.id %>" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold px-3 py-1.5 rounded-lg border border-slate-700 transition-all">
+                                                Editar Datos
+                                            </a>
+                                        </td>
+                                    </tr>
+                                <% }) %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

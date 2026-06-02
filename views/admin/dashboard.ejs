@@ -13,51 +13,7 @@
 
     <div class="flex h-screen relative z-10 overflow-hidden">
 
-        <aside class="w-64 bg-slate-900/90 border-r border-slate-800 flex flex-col justify-between text-slate-300">
-            <div>
-                <div class="p-5 border-b border-slate-800 flex items-center space-x-3 bg-slate-950/50">
-                    <i class="fa-solid fa-trophy text-amber-500 text-xl"></i>
-                    <span class="font-black tracking-wider text-white text-lg">Quiniela Admin</span>
-                </div>
-
-                <div class="p-5 flex items-center space-x-3 border-b border-slate-800/50">
-                    <div class="w-10 h-10 rounded-full bg-amber-500 flex items-center justify-center font-bold text-slate-950 shadow-md">
-                        AD
-                    </div>
-                    <div>
-                        <p class="text-xs text-slate-400">Bienvenido,</p>
-                        <p class="text-sm font-bold text-white">Administrador</p>
-                    </div>
-                </div>
-
-                <nav class="p-4 space-y-2">
-                    <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest px-3 mb-2">General</p>
-                    <a href="/admin/dashboard" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg bg-blue-600 text-white font-medium shadow-md transition-all">
-                        <i class="fa-solid fa-chart-pie w-5"></i>
-                        <span>Dashboard</span>
-                    </a>
-                    <a href="/admin/users" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 hover:text-white transition-all">
-                        <i class="fa-solid fa-users w-5"></i>
-                        <span>Usuarios</span>
-                    </a>
-                    <a href="/admin/matches" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 hover:text-white transition-all">
-                        <i class="fa-solid fa-calendar-days w-5"></i>
-                        <span>Partidos</span>
-                    </a>
-                    <a href="/admin/metrics" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 hover:text-white transition-all">
-                        <i class="fa-solid fa-database w-5"></i>
-                        <span>Métricas FIFA</span>
-                    </a>
-                </nav>
-            </div>
-
-            <div class="p-4 border-t border-slate-800 bg-slate-950/40">
-                <a href="/logout" class="flex items-center space-x-3 px-3 py-2 rounded-lg text-rose-400 hover:bg-rose-500/10 transition-all text-sm font-semibold">
-                    <i class="fa-solid fa-right-from-bracket"></i>
-                    <span>Cerrar Sesión</span>
-                </a>
-            </div>
-        </aside>
+        <%- include('../partials/admin_sidebar', { activePage: 'dashboard' }) %>
 
         <main class="flex-1 flex flex-col overflow-y-auto">
             

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listado de Partidos | Quiniela Mundial 2026</title>
+    <link rel="stylesheet" href="/css/tailwind.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-cover bg-center bg-no-repeat bg-fixed font-sans min-h-screen relative" style="background-image: url('/images/stadium_bg.jpeg');">
+    
+    <div class="absolute inset-0 bg-slate-950/80 backdrop-blur-sm z-0"></div>
+
+    <div class="flex h-screen relative z-10 overflow-hidden">
+
+        <%- include('../partials/admin_sidebar', { activePage: 'matches' }) %>
+
+        <main class="flex-1 flex flex-col overflow-y-auto">
+            
+            <header class="bg-slate-900/60 border-b border-slate-800 px-8 py-4 flex justify-between items-center backdrop-blur-md">
+                <h1 class="text-xl font-extrabold text-white">Listado Global de Partidos</h1>
+                <div class="text-sm text-slate-400 font-medium">Fútbol Mundial 2026</div>
+            </header>
+
+            <div class="p-8">
+                <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 backdrop-blur-md shadow-xl">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-base font-bold text-white flex items-center space-x-2">
+                            <i class="fa-solid fa-calendar-days text-amber-500"></i>
+                            <span>Todos los Partidos Registrados</span>
+                        </h3>
+                        <a href="/admin/matches/center" class="text-xs bg-blue-600 hover:bg-blue-500 text-white font-bold px-4 py-2 rounded-lg shadow-md transition-all">
+                            Ingresar Resultados
+                        </a>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm text-slate-300">
+                            <thead class="text-xs uppercase text-slate-400 bg-slate-950/50 rounded-lg">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 rounded-l-lg">ID</th>
+                                    <th scope="col" class="px-6 py-3">Fase</th>
+                                    <th scope="col" class="px-6 py-3">Confrontación</th>
+                                    <th scope="col" class="px-6 py-3 text-center">Fecha y Hora (VET)</th>
+                                    <th scope="col" class="px-6 py-3 text-center">Estado</th>
+                                    <th scope="col" class="px-6 py-3 text-center rounded-r-lg">Marcador Real</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-800/60 font-medium">
+                                <% matches.forEach(match => { %>
+                                    <tr class="hover:bg-slate-800/40 transition-colors">
+                                        <td class="px-6 py-4 font-bold text-slate-400">#<%= match.id %></td>
+                                        <td class="px-6 py-4 text-white"><%= match.stage %></td>
+                                        <td class="px-6 py-4 font-extrabold text-white">
+                                            <%= match.home_team %> vs <%= match.away_team %>
+                                        </td>
+                                        <td class="px-6 py-4 text-center text-slate-400">
+                                            <%= new Date(match.kickoff_time).toLocaleDateString('es-VE', {day:'2-digit', month:'short'}) %> -
+                                            <%= new Date(match.kickoff_time).toLocaleTimeString('es-VE', {hour:'2-digit', minute:'2-digit'}) %>
+                                        </td>
+                                        <td class="px-6 py-4 text-center">
+                                            <% if (match.status === 'finished') { %>
+                                                <span class="text-[10px] px-2.5 py-0.5 rounded-full font-black uppercase bg-slate-800 text-slate-400 border border-slate-700">
+                                                    Finalizado
+                                                </span>
+                                            <% } else if (match.status === 'live') { %>
+                                                <span class="text-[10px] px-2.5 py-0.5 rounded-full font-black uppercase bg-red-500/20 text-red-400 border border-red-500/30 animate-pulse">
+                                                    En Vivo
+                                                </span>
+                                            <% } else { %>
+                                                <span class="text-[10px] px-2.5 py-0.5 rounded-full font-black uppercase bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                                                    Programado
+                                                </span>
+                                            <% } %>
+                                        </td>
+                                        <td class="px-6 py-4 text-center">
+                                            <% if (match.status === 'finished') { %>
+                                                <span class="text-base font-black text-blue-400 bg-blue-500/5 px-3 py-1 rounded-lg border border-blue-500/10">
+                                                    <%= match.home_score_actual %> - <%= match.away_score_actual %>
+                                                </span>
+                                            <% } else { %>
+                                                <span class="text-slate-600">-</span>
+                                            <% } %>
+                                        </td>
+                                    </tr>
+                                <% }) %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

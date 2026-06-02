@@ -13,9 +13,11 @@ const ensureAdmin = (req, res, next) => {
 router.use(ensureAdmin);
 
 router.get('/dashboard', adminController.getDashboard);
-// Future routes:
-// router.get('/users', ...);
-// router.get('/matches', ...);
-// router.get('/metrics', ...);
+router.get('/users', adminController.getUsers);
+router.get('/users/edit/:id', adminController.getUserEdit);
+router.post('/users/edit/:id', adminController.postUserEdit);
+router.get('/matches', adminController.getMatches);
+router.get('/matches/center', adminController.getMatchesCenter);
+router.post('/matches/score', adminController.postMatchScore);
 
 module.exports = router;

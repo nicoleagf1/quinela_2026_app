@@ -55,6 +55,29 @@ class Match {
     );
     return result.rows;
   }
+
+  static async getAll() {
+    const result = await db.query('SELECT * FROM matches ORDER BY kickoff_time ASC');
+    return result.rows;
+  }
+
+  static async getScheduledAndLive() {
+    const result = await db.query(
+      `SELECT * FROM matches 
+       WHERE status IN ('scheduled', 'live') 
+       ORDER BY kickoff_time ASC`
+    );
+    return result.rows;
+  }
+
+  static async updateScore(id, homeScore, awayScore) {
+    await db.query(
+      `UPDATE matches 
+       SET home_score_actual = $1, away_score_actual = $2, status = 'finished', updated_at = CURRENT_TIMESTAMP 
+       WHERE id = $3`,
+      [homeScore, awayScore, id]
+    );
+  }
 }
 
 module.exports = Match;

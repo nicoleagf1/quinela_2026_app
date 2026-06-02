@@ -19,10 +19,13 @@ class Ranking {
 
   static async getLeaderboard() {
     const result = await db.query(
-      `SELECT u.id as user_id, u.first_name, u.last_name, l.total_points, l.exact_matches_count, l.outcome_matches_count
-       FROM leaderboards l
-       JOIN users u ON l.user_id = u.id
-       ORDER BY l.total_points DESC, l.exact_matches_count DESC`
+      `SELECT u.id as user_id, u.first_name, u.last_name, 
+              COALESCE(l.total_points, 0) as total_points, 
+              COALESCE(l.exact_matches_count, 0) as exact_matches_count, 
+              COALESCE(l.outcome_matches_count, 0) as outcome_matches_count
+       FROM users u
+       LEFT JOIN leaderboards l ON u.id = l.user_id
+       ORDER BY total_points DESC, l.exact_matches_count DESC, u.first_name ASC`
     );
     return result.rows;
   }
