@@ -18,3 +18,12 @@
 .animate-stadium-loop {
     animation: stadiumPan 24s ease-in-out infinite;
 }
+
+/* Ocultar scrollbar pero permitir scroll horizontal */
+.hide-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+.hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}

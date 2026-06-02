@@ -99,7 +99,7 @@
                         </div>
                         
                         <!-- Participante -->
-                        <div class="col-span-5 lg:col-span-4 flex items-center space-x-4 mt-4 md:mt-0">
+                        <div class="col-span-1 md:col-span-5 lg:col-span-4 flex items-center space-x-4 mt-4 md:mt-0">
                             <!-- Avatar -->
                             <div class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold text-white shadow-md bg-blue-600">
                                 <%= r.first_name.charAt(0).toUpperCase() %>
@@ -109,19 +109,19 @@
                         </div>
 
                         <!-- Exactos -->
-                        <div class="col-span-2 lg:col-span-3 flex justify-between md:justify-center items-center mt-2 md:mt-0">
+                        <div class="col-span-1 md:col-span-2 lg:col-span-3 flex justify-between md:justify-center items-center mt-2 md:mt-0">
                             <span class="md:hidden text-xs text-slate-500 font-bold uppercase w-1/2">Resultados Exactos:</span>
                             <span class="text-lg font-black text-emerald-500"><%= r.exact_matches_count %></span>
                         </div>
 
                         <!-- Simples -->
-                        <div class="col-span-2 flex justify-between md:justify-center items-center mt-2 md:mt-0">
+                        <div class="col-span-1 md:col-span-2 flex justify-between md:justify-center items-center mt-2 md:mt-0">
                             <span class="md:hidden text-xs text-slate-500 font-bold uppercase w-1/2">Aciertos Simples:</span>
                             <span class="text-lg font-black text-orange-500"><%= r.outcome_matches_count %></span>
                         </div>
 
                         <!-- Total -->
-                        <div class="col-span-2 flex justify-between md:justify-center items-center mt-2 md:mt-0">
+                        <div class="col-span-1 md:col-span-2 flex justify-between md:justify-center items-center mt-2 md:mt-0">
                             <span class="md:hidden text-xs text-slate-500 font-bold uppercase w-1/2">Total:</span>
                             <span class="text-xl font-black <%= isFirst ? 'text-amber-500' : 'text-white' %>">
                                 <%= r.total_points %> <span class="text-[10px] text-slate-500 font-bold">pts</span>
