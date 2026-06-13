@@ -30,13 +30,22 @@ class User {
     return result.rows;
   }
 
-  static async update(id, { firstName, lastName, email, role }) {
-    await db.query(
-      `UPDATE users 
-       SET first_name = $1, last_name = $2, email = $3, role = $4
-       WHERE id = $5`,
-      [firstName, lastName, email, role, id]
-    );
+  static async update(id, { firstName, lastName, email, role, passwordHash }) {
+    if (passwordHash) {
+      await db.query(
+        `UPDATE users 
+         SET first_name = $1, last_name = $2, email = $3, role = $4, password_hash = $5
+         WHERE id = $6`,
+        [firstName, lastName, email, role, passwordHash, id]
+      );
+    } else {
+      await db.query(
+        `UPDATE users 
+         SET first_name = $1, last_name = $2, email = $3, role = $4
+         WHERE id = $5`,
+        [firstName, lastName, email, role, id]
+      );
+    }
   }
 }
 

@@ -44,8 +44,8 @@
                         <i class="fa-solid fa-chart-column w-5 text-center text-slate-500"></i>
                         <span class="text-sm">Estadísticas</span>
                     </a>
-                    <a href="#" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg transition-all text-slate-400 hover:bg-slate-800/80 hover:text-white">
-                        <i class="fa-solid fa-shield-halved w-5 text-center text-slate-500"></i>
+                    <a href="/auditoria" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg transition-all <%= activePage === 'auditoria' ? 'bg-blue-600/90 text-white font-bold shadow-[0_0_15px_rgba(37,99,235,0.4)] border border-blue-500/50' : 'text-slate-400 hover:bg-slate-800/80 hover:text-white' %>">
+                        <i class="fa-solid fa-shield-halved w-5 text-center <%= activePage === 'auditoria' ? 'text-white' : 'text-slate-500' %>"></i>
                         <span class="text-sm">Auditoría</span>
                     </a>
                 </div>

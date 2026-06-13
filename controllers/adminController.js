@@ -1,3 +1,4 @@
+const bcrypt = require('bcrypt');
 const User = require('../models/User');
 const Prediction = require('../models/Prediction');
 const Match = require('../models/Match');
@@ -58,11 +59,16 @@ exports.getUserEdit = async (req, res) => {
 };
 
 exports.postUserEdit = async (req, res) => {
-  const { firstName, lastName, email, role } = req.body;
+  const { firstName, lastName, email, role, password } = req.body;
   try {
     const userId = req.params.id;
-    await User.update(userId, { firstName, lastName, email, role });
-    res.redirect('/admin/dashboard');
+    let passwordHash = null;
+    if (password && password.trim() !== '') {
+      const salt = await bcrypt.genSalt(10);
+      passwordHash = await bcrypt.hash(password, salt);
+    }
+    await User.update(userId, { firstName, lastName, email, role, passwordHash });
+    res.redirect('/admin/users');
   } catch (error) {
     console.error('Error saving user edit:', error);
     res.status(500).send('Error interno al guardar los cambios.');

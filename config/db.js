@@ -151,6 +151,19 @@ async function mockQuery(text, params = []) {
     return { rows: [] };
   }
 
+  if (queryText.startsWith('UPDATE users SET first_name = $1, last_name = $2, email = $3, role = $4, password_hash = $5 WHERE id = $6')) {
+    const idx = data.users.findIndex(u => u.id === params[5]);
+    if (idx !== -1) {
+      data.users[idx].first_name = params[0];
+      data.users[idx].last_name = params[1];
+      data.users[idx].email = params[2];
+      data.users[idx].role = params[3];
+      data.users[idx].password_hash = params[4];
+      saveJSONDb(data);
+    }
+    return { rows: [] };
+  }
+
   // 10. INSERT INTO matches
   if (queryText.startsWith('INSERT INTO matches')) {
     const newMatch = {
@@ -206,6 +219,29 @@ async function mockQuery(text, params = []) {
   if (queryText.includes("FROM matches WHERE status = 'finished'")) {
     const count = data.matches.filter(m => m.status === 'finished').length;
     return { rows: [{ count: count.toString() }] };
+  }
+
+  // 14a. COUNT all matches
+  if (queryText === 'SELECT COUNT(*) FROM matches') {
+    return { rows: [{ count: data.matches.length.toString() }] };
+  }
+
+  // 14b. SELECT upcoming matches
+  if (queryText.includes("FROM matches WHERE status = 'scheduled' ORDER BY kickoff_time ASC LIMIT")) {
+    const limit = params[0] || 3;
+    const upcoming = data.matches.filter(m => m.status === 'scheduled')
+      .sort((a, b) => new Date(a.kickoff_time) - new Date(b.kickoff_time))
+      .slice(0, limit);
+    return { rows: upcoming };
+  }
+
+  // 14c. SELECT recent matches results
+  if (queryText.includes("FROM matches WHERE status = 'finished' ORDER BY updated_at DESC LIMIT")) {
+    const limit = params[0] || 3;
+    const finished = data.matches.filter(m => m.status === 'finished')
+      .sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at))
+      .slice(0, limit);
+    return { rows: finished };
   }
 
   // 15. SELECT critical matches
@@ -283,6 +319,24 @@ async function mockQuery(text, params = []) {
     return { rows: [{ count: data.predictions.length.toString() }] };
   }
 
+  // 21a. SELECT predictions user stats
+  if (queryText.includes('total_predictions') && queryText.includes('FROM predictions WHERE user_id = $1')) {
+    const userId = params[0];
+    const userPreds = data.predictions.filter(p => p.user_id === userId);
+    const total = userPreds.length;
+    const exact = userPreds.filter(p => p.points_awarded === 3).length;
+    const outcome = userPreds.filter(p => p.points_awarded === 1).length;
+    const correct = userPreds.filter(p => p.points_awarded > 0).length;
+    return {
+      rows: [{
+        total_predictions: total.toString(),
+        exact_matches: exact.toString(),
+        outcome_matches: outcome.toString(),
+        correct_predictions: correct.toString()
+      }]
+    };
+  }
+
   // 22. UPDATE prediction points
   if (queryText.startsWith('UPDATE predictions SET points_awarded = $1')) {
     const id = params[1];
@@ -323,6 +377,35 @@ async function mockQuery(text, params = []) {
     return { rows: [] };
   }
 
+  // 23b. SELECT user position rank
+  if (queryText.includes('RankedUsers')) {
+    const userId = params[0];
+    const leaderboard = data.users.map(u => {
+      const l = data.leaderboards.find(entry => entry.user_id === u.id);
+      return {
+        user_id: u.id,
+        total_points: l ? l.total_points : 0,
+        exact_matches_count: l ? l.exact_matches_count : 0,
+        first_name: u.first_name
+      };
+    }).sort((a, b) => {
+      if (b.total_points !== a.total_points) return b.total_points - a.total_points;
+      if (b.exact_matches_count !== a.exact_matches_count) return b.exact_matches_count - a.exact_matches_count;
+      return a.first_name.localeCompare(b.first_name);
+    });
+
+    const idx = leaderboard.findIndex(entry => entry.user_id === userId);
+    const position = idx !== -1 ? idx + 1 : 0;
+    const points = idx !== -1 ? leaderboard[idx].total_points : 0;
+
+    return {
+      rows: [{
+        position: position,
+        total_points: points
+      }]
+    };
+  }
+
   // 24. SELECT leaderboard left join users
   if (queryText.includes('FROM users u LEFT JOIN leaderboards l ON u.id = l.user_id')) {
     const rows = data.users.map(u => {
@@ -340,6 +423,9 @@ async function mockQuery(text, params = []) {
       if (b.exact_matches_count !== a.exact_matches_count) return b.exact_matches_count - a.exact_matches_count;
       return a.first_name.localeCompare(b.first_name);
     });
+    if (queryText.includes('LIMIT $1') && params[0] !== undefined) {
+      return { rows: rows.slice(0, params[0]) };
+    }
     return { rows };
   }
 
