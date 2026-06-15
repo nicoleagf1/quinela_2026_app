@@ -1,6 +1,7 @@
 const Match = require('../models/Match');
 const Prediction = require('../models/Prediction');
 const Audit = require('../models/Audit');
+const teamData = require('../utils/teamData');
 
 exports.submitPrediction = async (req, res) => {
     const { matchId, homeScore, awayScore } = req.body;
@@ -12,13 +13,17 @@ exports.submitPrediction = async (req, res) => {
             return res.status(404).render('error', { mensaje: 'El partido no existe.' });
         }
 
-        const currentTime = new Date();
-        const kickoffTime = new Date(match.kickoff_time);
+        const isClosed = match.status === 'finished' || (
+            match.prediction_deadline 
+                ? (new Date() >= new Date(match.prediction_deadline)) 
+                : (match.status === 'live' || new Date() >= new Date(match.kickoff_time))
+        );
 
-        if (currentTime >= kickoffTime) {
+        if (isClosed) {
             return res.status(400).render('matches', { 
-                error: 'Error: El partido ya ha comenzado. Predicción bloqueada.',
+                error: 'Error: El período de predicciones para este partido ha cerrado.',
                 groupedMatches: await Match.getGroupedMatchesForUser(userId),
+                teamData,
                 success: false
             });
         }

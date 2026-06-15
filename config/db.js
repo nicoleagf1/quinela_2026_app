@@ -174,6 +174,8 @@ async function mockQuery(text, params = []) {
       kickoff_time: params[3],
       home_score_actual: null,
       away_score_actual: null,
+      winner_team: null,
+      prediction_deadline: null,
       status: 'scheduled',
       updated_at: new Date()
     };
@@ -209,6 +211,18 @@ async function mockQuery(text, params = []) {
     const idx = data.matches.findIndex(m => m.id === id);
     if (idx !== -1) {
       data.matches[idx].status = params[0];
+      data.matches[idx].updated_at = new Date();
+      saveJSONDb(data);
+    }
+    return { rows: [] };
+  }
+
+  // 13b. UPDATE match prediction deadline
+  if (queryText.startsWith('UPDATE matches SET prediction_deadline = $1')) {
+    const id = parseInt(params[1], 10);
+    const idx = data.matches.findIndex(m => m.id === id);
+    if (idx !== -1) {
+      data.matches[idx].prediction_deadline = params[0] ? new Date(params[0]).toISOString() : null;
       data.matches[idx].updated_at = new Date();
       saveJSONDb(data);
     }
@@ -267,11 +281,18 @@ async function mockQuery(text, params = []) {
 
   // 18. UPDATE match score
   if (queryText.startsWith('UPDATE matches SET home_score_actual = $1')) {
-    const id = parseInt(params[2], 10);
+    const id = params.length === 4 ? parseInt(params[3], 10) : parseInt(params[2], 10);
     const idx = data.matches.findIndex(m => m.id === id);
     if (idx !== -1) {
       data.matches[idx].home_score_actual = parseInt(params[0], 10);
       data.matches[idx].away_score_actual = parseInt(params[1], 10);
+      if (params.length === 4) {
+        data.matches[idx].winner_team = params[2];
+      } else {
+        const hs = parseInt(params[0], 10);
+        const as = parseInt(params[1], 10);
+        data.matches[idx].winner_team = hs > as ? data.matches[idx].home_team : (as > hs ? data.matches[idx].away_team : null);
+      }
       data.matches[idx].status = 'finished';
       data.matches[idx].updated_at = new Date();
       saveJSONDb(data);

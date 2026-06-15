@@ -87,6 +87,40 @@
                                             </div>
                                         </div>
 
+                                        <% if (!match.stage.startsWith('Group ')) { %>
+                                            <div id="penalty-winner-<%= match.id %>" class="bg-slate-950/60 p-3 rounded-lg border border-slate-850 space-y-2 mt-4 hidden">
+                                                <label class="text-[10px] font-black text-amber-500 uppercase block tracking-wider">Ganador por Penales</label>
+                                                <select name="winnerTeam" class="w-full bg-slate-900 border border-slate-800 text-xs rounded p-2 text-white focus:outline-none focus:border-blue-500">
+                                                    <option value="<%= match.home_team %>"><%= match.home_team %> (Local)</option>
+                                                    <option value="<%= match.away_team %>"><%= match.away_team %> (Visitante)</option>
+                                                </select>
+                                            </div>
+                                            
+                                            <script>
+                                                document.addEventListener('DOMContentLoaded', () => {
+                                                    const form = document.querySelector('form[action="/admin/matches/score"] input[value="<%= match.id %>"]').closest('form');
+                                                    const homeScore = form.querySelector('input[name="homeScore"]');
+                                                    const awayScore = form.querySelector('input[name="awayScore"]');
+                                                    const penaltyDiv = form.querySelector('#penalty-winner-<%= match.id %>');
+                                                    
+                                                    function checkDraw() {
+                                                        const hs = parseInt(homeScore.value, 10);
+                                                        const as = parseInt(awayScore.value, 10);
+                                                        if (!isNaN(hs) && !isNaN(as) && hs === as) {
+                                                            penaltyDiv.classList.remove('hidden');
+                                                            penaltyDiv.querySelector('select').setAttribute('required', 'required');
+                                                        } else {
+                                                            penaltyDiv.classList.add('hidden');
+                                                            penaltyDiv.querySelector('select').removeAttribute('required');
+                                                        }
+                                                    }
+                                                    
+                                                    homeScore.addEventListener('input', checkDraw);
+                                                    awayScore.addEventListener('input', checkDraw);
+                                                });
+                                            </script>
+                                        <% } %>
+
                                         <div class="pt-4 border-t border-slate-900/60 flex items-center justify-between">
                                             <div class="text-[10px] text-slate-500">
                                                 📅 Kickoff: <%= new Date(match.kickoff_time).toLocaleDateString('es-VE') %> <%= new Date(match.kickoff_time).toLocaleTimeString('es-VE', {hour:'2-digit', minute:'2-digit'}) %>

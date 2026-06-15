@@ -19,5 +19,6 @@ router.post('/users/edit/:id', adminController.postUserEdit);
 router.get('/matches', adminController.getMatches);
 router.get('/matches/center', adminController.getMatchesCenter);
 router.post('/matches/score', adminController.postMatchScore);
+router.post('/matches/override-deadline', adminController.postOverrideDeadline);
 
 module.exports = router;

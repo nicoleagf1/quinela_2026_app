@@ -41,6 +41,13 @@ class Match {
     await db.query('UPDATE matches SET status = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2', [status, id]);
   }
 
+  static async updatePredictionDeadline(id, deadline) {
+    await db.query(
+      'UPDATE matches SET prediction_deadline = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2',
+      [deadline, id]
+    );
+  }
+
   static async countFinishedMatches() {
     const result = await db.query("SELECT COUNT(*) FROM matches WHERE status = 'finished'");
     return parseInt(result.rows[0].count, 10);
@@ -70,12 +77,12 @@ class Match {
     return result.rows;
   }
 
-  static async updateScore(id, homeScore, awayScore) {
+  static async updateScore(id, homeScore, awayScore, winnerTeam) {
     await db.query(
       `UPDATE matches 
-       SET home_score_actual = $1, away_score_actual = $2, status = 'finished', updated_at = CURRENT_TIMESTAMP 
-       WHERE id = $3`,
-      [homeScore, awayScore, id]
+       SET home_score_actual = $1, away_score_actual = $2, winner_team = $3, status = 'finished', updated_at = CURRENT_TIMESTAMP 
+       WHERE id = $4`,
+      [homeScore, awayScore, winnerTeam, id]
     );
   }
 

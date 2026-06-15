@@ -5,6 +5,7 @@ const Match = require('../models/Match');
 const Ranking = require('../models/Ranking');
 const rankingController = require('./rankingController');
 const teamData = require('../utils/teamData');
+const TournamentService = require('../services/tournamentService');
 
 exports.getDashboard = async (req, res) => {
   try {
@@ -78,7 +79,7 @@ exports.postUserEdit = async (req, res) => {
 exports.getMatches = async (req, res) => {
   try {
     const matches = await Match.getAll();
-    res.render('admin/matches', { matches });
+    res.render('admin/matches', { matches, success: req.query.status === 'success' });
   } catch (error) {
     console.error('Error fetching matches for admin:', error);
     res.status(500).send('Error interno en el servidor.');
@@ -96,7 +97,7 @@ exports.getMatchesCenter = async (req, res) => {
 };
 
 exports.postMatchScore = async (req, res) => {
-  const { matchId, homeScore, awayScore } = req.body;
+  const { matchId, homeScore, awayScore, winnerTeam } = req.body;
   try {
     const id = parseInt(matchId, 10);
     const hs = parseInt(homeScore, 10);
@@ -106,15 +107,70 @@ exports.postMatchScore = async (req, res) => {
       return res.status(400).send('Datos de puntuación inválidos.');
     }
 
-    // 1. Update the actual score of the match in the DB and set it to finished
-    await Match.updateScore(id, hs, as);
+    const match = await Match.findById(id);
+    if (!match) {
+      return res.status(404).send('Partido no encontrado.');
+    }
+
+    let calculatedWinner = null;
+    const isGroupStage = match.stage.startsWith('Group ');
+
+    if (hs > as) {
+      calculatedWinner = match.home_team;
+    } else if (as > hs) {
+      calculatedWinner = match.away_team;
+    } else {
+      if (!isGroupStage) {
+        if (!winnerTeam || (winnerTeam !== match.home_team && winnerTeam !== match.away_team)) {
+          return res.status(400).send('Se requiere especificar un ganador por penales para esta fase.');
+        }
+        calculatedWinner = winnerTeam;
+      } else {
+        calculatedWinner = null;
+      }
+    }
+
+    // 1. Update the actual score of the match in the DB and set it to finished with winner
+    await Match.updateScore(id, hs, as, calculatedWinner);
 
     // 2. Process all user predictions for this match and update scores in DB
     await rankingController.processMatchScoresAndRankings(id, hs, as);
+
+    // 3. Check if all matches in the current stage are finished and advance
+    await TournamentService.checkAndAdvanceStage();
 
     res.redirect('/admin/matches/center?status=success');
   } catch (error) {
     console.error('Error posting match score:', error);
     res.status(500).send('Error interno al registrar el marcador.');
+  }
+};
+
+exports.postOverrideDeadline = async (req, res) => {
+  const { matchId, durationMinutes } = req.body;
+  try {
+    const id = parseInt(matchId, 10);
+    if (isNaN(id)) {
+      return res.status(400).send('ID de partido inválido.');
+    }
+
+    let deadline = null;
+    if (durationMinutes === 'close') {
+      deadline = new Date();
+    } else if (durationMinutes === 'reset') {
+      deadline = null;
+    } else {
+      const mins = parseInt(durationMinutes, 10);
+      if (isNaN(mins) || mins <= 0) {
+        return res.status(400).send('Duración inválida.');
+      }
+      deadline = new Date(Date.now() + mins * 60 * 1000);
+    }
+
+    await Match.updatePredictionDeadline(id, deadline);
+    res.redirect('/admin/matches?status=success');
+  } catch (error) {
+    console.error('Error updating prediction deadline:', error);
+    res.status(500).send('Error interno al actualizar el límite.');
   }
 };

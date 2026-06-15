@@ -23,6 +23,8 @@ CREATE TABLE matches (
     kickoff_time TIMESTAMP WITH TIME ZONE NOT NULL,
     home_score_actual INT DEFAULT NULL,
     away_score_actual INT DEFAULT NULL,
+    winner_team VARCHAR(50) DEFAULT NULL,
+    prediction_deadline TIMESTAMP WITH TIME ZONE DEFAULT NULL,
     status VARCHAR(20) DEFAULT 'scheduled' CHECK (status IN ('scheduled', 'live', 'finished')),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );

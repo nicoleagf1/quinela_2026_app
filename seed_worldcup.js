@@ -1,15 +1,49 @@
 const db = require('./config/db');
 const bcrypt = require('bcrypt');
 
-const teams = [
-  'Canada', 'Mexico', 'United States',
-  'Algeria', 'Cabo Verde', 'Congo DR', 'Côte d\'Ivoire', 'Egypt', 'Ghana', 'Morocco', 'Senegal', 'South Africa', 'Tunisia',
-  'Australia', 'IR Iran', 'Iraq', 'Japan', 'Jordan', 'Korea Republic', 'Qatar', 'Saudi Arabia', 'Uzbekistan',
-  'Austria', 'Belgium', 'Bosnia and Herzegovina', 'Croatia', 'Czechia', 'England', 'France', 'Germany', 'Netherlands', 'Norway', 'Portugal', 'Scotland', 'Spain', 'Sweden', 'Switzerland', 'Türkiye',
-  'Curaçao', 'Haiti', 'Panama',
-  'New Zealand',
-  'Argentina', 'Brazil', 'Colombia', 'Ecuador', 'Paraguay', 'Uruguay'
-];
+const groupsData = {
+  A: ['Mexico', 'South Africa', 'Korea Republic', 'Czechia'],
+  B: ['Canada', 'Bosnia and Herzegovina', 'Qatar', 'Switzerland'],
+  C: ['Brazil', 'Morocco', 'Haiti', 'Scotland'],
+  D: ['United States', 'Paraguay', 'Australia', 'Türkiye'],
+  E: ['Germany', 'Curaçao', 'Côte d\'Ivoire', 'Ecuador'],
+  F: ['Netherlands', 'Japan', 'Sweden', 'Tunisia'],
+  G: ['Belgium', 'Egypt', 'Iran', 'New Zealand'],
+  H: ['Spain', 'Cabo Verde', 'Saudi Arabia', 'Uruguay'],
+  I: ['France', 'Senegal', 'Norway', 'Iraq'],
+  J: ['Argentina', 'Algeria', 'Austria', 'Jordan'],
+  K: ['Portugal', 'Congo DR', 'Uzbekistan', 'Colombia'],
+  L: ['England', 'Croatia', 'Ghana', 'Panama']
+};
+
+function getMatchDate(round, groupIndex, matchInRound) {
+  const roundStartDays = [0, 5, 10]; // Round 1 starts June 11, Round 2 June 16, Round 3 June 21
+  const baseDate = new Date('2026-06-11T12:00:00Z');
+  
+  let dayOffset = 0;
+  if (groupIndex < 2) dayOffset = 0; // Groups A, B on Day 0
+  else if (groupIndex < 4) dayOffset = 1; // Groups C, D on Day 1
+  else if (groupIndex < 6) dayOffset = 2; // Groups E, F on Day 2
+  else if (groupIndex < 9) dayOffset = 3; // Groups G, H, I on Day 3
+  else dayOffset = 4; // Groups J, K, L on Day 4
+  
+  const totalDaysOffset = roundStartDays[round] + dayOffset;
+  const date = new Date(baseDate.getTime() + totalDaysOffset * 24 * 60 * 60 * 1000);
+  
+  let hourOffset = 12;
+  if (groupIndex < 6) {
+    const relativeGroup = groupIndex % 2;
+    const slot = relativeGroup * 2 + matchInRound; // 0, 1, 2, 3
+    hourOffset = 12 + slot * 2; // 12:00, 14:00, 16:00, 18:00
+  } else {
+    const relativeGroup = (groupIndex - 6) % 3;
+    const slot = relativeGroup * 2 + matchInRound; // 0, 1, 2, 3, 4, 5
+    hourOffset = 10 + slot * 2; // 10:00, 12:00, 14:00, 16:00, 18:00, 20:00
+  }
+  
+  date.setUTCHours(hourOffset, 0, 0, 0);
+  return date;
+}
 
 async function seed() {
   console.log('Clearing database tables...');
@@ -51,60 +85,51 @@ async function seed() {
     console.log('- User 1: user1@quiniela2026.com / userpassword');
     console.log('- User 2: user2@quiniela2026.com / userpassword');
 
-    // Seed Matches
-    console.log('Seeding matches...');
-    const shuffled = [...teams].sort(() => 0.5 - Math.random());
-    const groups = [];
-    for(let i = 0; i < 12; i++) {
-        groups.push(shuffled.slice(i * 4, (i + 1) * 4));
-    }
-    
-    let baseDate = new Date('2026-06-11T16:00:00Z');
-    const matchIds = [];
-    
-    for (let i = 0; i < 12; i++) {
-      const groupLetter = String.fromCharCode(65 + i);
-      const team1 = groups[i][0];
-      const team2 = groups[i][1];
-      const team3 = groups[i][2];
-      const team4 = groups[i][3];
+    console.log('Generating 72 group stage matches...');
+    const groupLetters = Object.keys(groupsData);
+    let matchCount = 0;
 
-      // Match 1
-      const res1 = await db.query(
-        `INSERT INTO matches (stage, home_team, away_team, kickoff_time) VALUES ($1, $2, $3, $4) RETURNING id`,
-        [`Group ${groupLetter}`, team1, team2, new Date(baseDate.getTime() + (i * 24 * 60 * 60 * 1000))]
-      );
-      matchIds.push(res1.rows[0].id);
+    for (let g = 0; g < groupLetters.length; g++) {
+      const letter = groupLetters[g];
+      const teams = groupsData[letter];
+      const stageName = `Group ${letter}`;
 
-      // Match 2
-      const res2 = await db.query(
-        `INSERT INTO matches (stage, home_team, away_team, kickoff_time) VALUES ($1, $2, $3, $4) RETURNING id`,
-        [`Group ${groupLetter}`, team3, team4, new Date(baseDate.getTime() + (i * 24 * 60 * 60 * 1000) + (4 * 60 * 60 * 1000))] // 4 hours later
-      );
-      matchIds.push(res2.rows[0].id);
-    }
-    console.log(`Inserted ${matchIds.length} matches.`);
+      // Round-robin pairings
+      // Round 1: T0 vs T1, T2 vs T3
+      const round1 = [
+        [teams[0], teams[1]],
+        [teams[2], teams[3]]
+      ];
+      // Round 2: T0 vs T2, T1 vs T3
+      const round2 = [
+        [teams[0], teams[2]],
+        [teams[1], teams[3]]
+      ];
+      // Round 3: T0 vs T3, T1 vs T2
+      const round3 = [
+        [teams[0], teams[3]],
+        [teams[1], teams[2]]
+      ];
 
-    // Seed Predictions
-    console.log('Seeding user predictions...');
-    // User 1 predicts first 5 matches
-    for (let i = 0; i < 5; i++) {
-      await db.query(
-        `INSERT INTO predictions (user_id, match_id, home_score_predicted, away_score_predicted)
-         VALUES ($1, $2, $3, $4)`,
-        [user1Id, matchIds[i], Math.floor(Math.random() * 4), Math.floor(Math.random() * 4)]
-      );
-    }
-    // User 2 predicts first 5 matches
-    for (let i = 0; i < 5; i++) {
-      await db.query(
-        `INSERT INTO predictions (user_id, match_id, home_score_predicted, away_score_predicted)
-         VALUES ($1, $2, $3, $4)`,
-        [user2Id, matchIds[i], Math.floor(Math.random() * 4), Math.floor(Math.random() * 4)]
-      );
-    }
-    console.log('Predictions seeded.');
+      const rounds = [round1, round2, round3];
 
+      for (let r = 0; r < rounds.length; r++) {
+        const roundPairings = rounds[r];
+        for (let m = 0; m < roundPairings.length; m++) {
+          const [home, away] = roundPairings[m];
+          const kickoff = getMatchDate(r, g, m);
+
+          await db.query(
+            `INSERT INTO matches (stage, home_team, away_team, kickoff_time)
+             VALUES ($1, $2, $3, $4)`,
+            [stageName, home, away, kickoff]
+          );
+          matchCount++;
+        }
+      }
+    }
+
+    console.log(`Successfully seeded ${matchCount} official Group Stage matches.`);
     console.log('Seed completed successfully.');
     process.exit(0);
   } catch (err) {
